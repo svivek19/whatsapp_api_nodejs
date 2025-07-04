@@ -91,5 +91,50 @@ async function uploadMediaMessage() {
   console.log(response.data);
 }
 
+// Dynamic values
+async function sendTemplateMessageWithDynamicValues() {
+  const response = await axios({
+    url: "https://graph.facebook.com/v22.0/663233670209560/messages",
+    method: "post",
+    headers: {
+      Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    data: JSON.stringify({
+      messaging_product: "whatsapp",
+      to: "919361758471",
+      type: "template",
+      template: {
+        name: "greeting",
+        language: {
+          code: "en_US",
+        },
+        components: [
+          {
+            type: "header",
+            parameters: [
+              {
+                type: "text",
+                text: "vivek",
+              },
+            ],
+          },
+          {
+            type: "body",
+            parameters: [
+              {
+                type: "text",
+                text: "Company name",
+              },
+            ],
+          },
+        ],
+      },
+    }),
+  });
+
+  console.log(response.data);
+}
+
 // uploadMediaMessage();
-sendMediaMessage();
+sendTemplateMessageWithDynamicValues();
