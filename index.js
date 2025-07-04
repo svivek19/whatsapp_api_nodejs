@@ -1,0 +1,95 @@
+require("dotenv").config();
+const axios = require("axios");
+const FormData = require("form-data");
+const fs = require("fs");
+
+async function sendTemplateMessage() {
+  const response = await axios({
+    url: "https://graph.facebook.com/v22.0/663233670209560/messages",
+    method: "post",
+    headers: {
+      Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    data: JSON.stringify({
+      messaging_product: "whatsapp",
+      to: "919361758471",
+      type: "template",
+      template: {
+        name: "hello_world",
+        language: {
+          code: "en_US",
+        },
+      },
+    }),
+  });
+
+  console.log(response.data);
+}
+
+async function sendTextMessage() {
+  const response = await axios({
+    url: "https://graph.facebook.com/v22.0/663233670209560/messages",
+    method: "post",
+    headers: {
+      Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    data: JSON.stringify({
+      messaging_product: "whatsapp",
+      to: "919361758471",
+      type: "text",
+      text: {
+        body: "This is a text message",
+      },
+    }),
+  });
+
+  console.log(response.data);
+}
+
+async function sendMediaMessage() {
+  const response = await axios({
+    url: "https://graph.facebook.com/v22.0/663233670209560/messages",
+    method: "post",
+    headers: {
+      Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    data: JSON.stringify({
+      messaging_product: "whatsapp",
+      to: "919361758471",
+      type: "image",
+      image: {
+        // link: "https://ellipsiseducation.com/wp-content/uploads/2023/03/javascript.png",
+        id: "1261695208635775",
+        caption: "JavaScript Logo",
+      },
+    }),
+  });
+
+  console.log(response.data);
+}
+
+async function uploadMediaMessage() {
+  const data = new FormData();
+  data.append("messaging_product", "whatsapp");
+  data.append("file", fs.createReadStream(process.cwd() + "/nodejs.png"), {
+    contentType: "image/png",
+  });
+  data.append("type", "image/png");
+
+  const response = await axios({
+    url: "https://graph.facebook.com/v22.0/663233670209560/media",
+    method: "post",
+    headers: {
+      Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+    },
+    data: data,
+  });
+
+  console.log(response.data);
+}
+
+// uploadMediaMessage();
+sendMediaMessage();
