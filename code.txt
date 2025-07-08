@@ -1,0 +1,146 @@
+require("dotenv").config();
+const axios = require("axios");
+const FormData = require("form-data");
+const fs = require("fs");
+
+async function sendTemplateMessage() {
+  const response = await axios({
+    url: `https://graph.facebook.com/v22.0/${process.env.PHONENUMBER_ID}/messages`,
+    method: "post",
+    headers: {
+      Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    data: JSON.stringify({
+      messaging_product: "whatsapp",
+      to: "919361758471",
+      type: "template",
+      template: {
+        name: "hello_world",
+        language: {
+          code: "en_US",
+        },
+      },
+    }),
+  });
+
+  console.log(response.data);
+}
+
+async function sendTextMessage() {
+  const response = await axios({
+    url: `https://graph.facebook.com/v22.0/${process.env.PHONENUMBER_ID}/messages`,
+    method: "post",
+    headers: {
+      Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    data: JSON.stringify({
+      messaging_product: "whatsapp",
+      to: "919361758471",
+      type: "text",
+      text: {
+        body:
+          "Good morning,\n\nThis is a test message from Meta confirming that billing notifications, " +
+          "bug and error alerts, template‑validation windows, and the 24‑hour session‑expiry period " +
+          "are all being delivered correctly.",
+      },
+    }),
+  });
+
+  console.log(response.data);
+}
+
+async function sendMediaMessage() {
+  const response = await axios({
+    url: `https://graph.facebook.com/v22.0/${process.env.PHONENUMBER_ID}/messages`,
+    method: "post",
+    headers: {
+      Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    data: JSON.stringify({
+      messaging_product: "whatsapp",
+      to: "919361758471",
+      type: "image",
+      image: {
+        // link: "https://ellipsiseducation.com/wp-content/uploads/2023/03/javascript.png",
+        id: "1261695208635775",
+        caption: "JavaScript Logo",
+      },
+    }),
+  });
+
+  console.log(response.data);
+}
+
+async function uploadMediaMessage() {
+  const data = new FormData();
+  data.append("messaging_product", "whatsapp");
+  data.append("file", fs.createReadStream(process.cwd() + "/nodejs.png"), {
+    contentType: "image/png",
+  });
+  data.append("type", "image/png");
+
+  const response = await axios({
+    url: `https://graph.facebook.com/v22.0/${process.env.PHONENUMBER_ID}/media`,
+    method: "post",
+    headers: {
+      Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+    },
+    data: data,
+  });
+
+  console.log(response.data);
+}
+
+// Dynamic values
+async function sendTemplateMessageWithDynamicValues() {
+  const response = await axios({
+    url: `https://graph.facebook.com/v22.0/${process.env.PHONENUMBER_ID}/messages`,
+    method: "post",
+    headers: {
+      Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    data: JSON.stringify({
+      messaging_product: "whatsapp",
+      to: "",
+      type: "template",
+      template: {
+        name: "greeting",
+        language: {
+          code: "en_US",
+        },
+        components: [
+          {
+            type: "header",
+            parameters: [
+              {
+                type: "text",
+                text: "vivek",
+              },
+            ],
+          },
+          {
+            type: "body",
+            parameters: [
+              {
+                type: "text",
+                text: "Company name",
+              },
+            ],
+          },
+        ],
+      },
+    }),
+  });
+
+  console.log(response.data);
+}
+
+// uploadMediaMessage();
+// sendTemplateMessageWithDynamicValues();
+
+// sendTextMessage();
+// sendTemplateMessage();

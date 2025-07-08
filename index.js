@@ -1,140 +1,54 @@
 require("dotenv").config();
 const axios = require("axios");
-const FormData = require("form-data");
-const fs = require("fs");
 
-async function sendTemplateMessage() {
-  const response = await axios({
-    url: `https://graph.facebook.com/v22.0/${process.env.PHONENUMBER_ID}/messages`,
-    method: "post",
-    headers: {
-      Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
-      "Content-Type": "application/json",
-    },
-    data: JSON.stringify({
-      messaging_product: "whatsapp",
-      to: "919361758471",
-      type: "template",
-      template: {
-        name: "hello_world",
-        language: {
-          code: "en_US",
+const WHATSAPP_TOKEN = process.env.WHATSAPP_TOKEN;
+const PHONENUMBER_ID = process.env.PHONENUMBER_ID;
+
+const RECIPIENTS = [
+  { number: "919361758471", name: "Vivek" },
+  { number: "917603857110", name: "Nirmal" },
+  { number: "918637468236", name: "Praveen" },
+  { number: "919790112364", name: "Sakthi" },
+  { number: "916369725985", name: "Sri Ramu" },
+  { number: "917418831620", name: "Mukesh" },
+  { number: "918508023007", name: "Syed" },
+  { number: "919342836860", name: "Saravanan" },
+];
+
+function buildBody(name = "there") {
+  return `Good morning, ${name},\n\nThis is a test message from Meta confirming that billing notifications, bug and error alerts, template‑validation windows, and the 24‑hour session‑expiry period are all being delivered correctly.`;
+}
+
+async function sendTextMessage(to, body) {
+  try {
+    const { data } = await axios.post(
+      `https://graph.facebook.com/v22.0/${PHONENUMBER_ID}/messages`,
+      {
+        messaging_product: "whatsapp",
+        to,
+        type: "text",
+        text: { body },
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${WHATSAPP_TOKEN}`,
+          "Content-Type": "application/json",
         },
-      },
-    }),
-  });
-
-  console.log(response.data);
+      }
+    );
+    console.log(`Sent to ${to}: ${data.messages?.[0]?.id}`);
+  } catch (err) {
+    console.error(`Failed for ${to}:`, err.response?.data || err.message);
+  }
 }
 
-async function sendTextMessage() {
-  const response = await axios({
-    url: `https://graph.facebook.com/v22.0/${process.env.PHONENUMBER_ID}/messages`,
-    method: "post",
-    headers: {
-      Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
-      "Content-Type": "application/json",
-    },
-    data: JSON.stringify({
-      messaging_product: "whatsapp",
-      to: "919361758471",
-      type: "text",
-      text: {
-        body: "This is a text message",
-      },
-    }),
-  });
-
-  console.log(response.data);
+async function sendToAll() {
+  for (const [i, { number, name }] of RECIPIENTS.entries()) {
+    await sendTextMessage(number, buildBody(name));
+    if (i < RECIPIENTS.length - 1) {
+      await new Promise((r) => setTimeout(r, 6000));
+    }
+  }
 }
 
-async function sendMediaMessage() {
-  const response = await axios({
-    url: `https://graph.facebook.com/v22.0/${process.env.PHONENUMBER_ID}/messages`,
-    method: "post",
-    headers: {
-      Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
-      "Content-Type": "application/json",
-    },
-    data: JSON.stringify({
-      messaging_product: "whatsapp",
-      to: "919361758471",
-      type: "image",
-      image: {
-        // link: "https://ellipsiseducation.com/wp-content/uploads/2023/03/javascript.png",
-        id: "1261695208635775",
-        caption: "JavaScript Logo",
-      },
-    }),
-  });
-
-  console.log(response.data);
-}
-
-async function uploadMediaMessage() {
-  const data = new FormData();
-  data.append("messaging_product", "whatsapp");
-  data.append("file", fs.createReadStream(process.cwd() + "/nodejs.png"), {
-    contentType: "image/png",
-  });
-  data.append("type", "image/png");
-
-  const response = await axios({
-    url: `https://graph.facebook.com/v22.0/${process.env.PHONENUMBER_ID}/media`,
-    method: "post",
-    headers: {
-      Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
-    },
-    data: data,
-  });
-
-  console.log(response.data);
-}
-
-// Dynamic values
-async function sendTemplateMessageWithDynamicValues() {
-  const response = await axios({
-    url: `https://graph.facebook.com/v22.0/${process.env.PHONENUMBER_ID}/messages`,
-    method: "post",
-    headers: {
-      Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
-      "Content-Type": "application/json",
-    },
-    data: JSON.stringify({
-      messaging_product: "whatsapp",
-      to: "",
-      type: "template",
-      template: {
-        name: "greeting",
-        language: {
-          code: "en_US",
-        },
-        components: [
-          {
-            type: "header",
-            parameters: [
-              {
-                type: "text",
-                text: "vivek",
-              },
-            ],
-          },
-          {
-            type: "body",
-            parameters: [
-              {
-                type: "text",
-                text: "Company name",
-              },
-            ],
-          },
-        ],
-      },
-    }),
-  });
-
-  console.log(response.data);
-}
-
-// uploadMediaMessage();
-// sendTemplateMessageWithDynamicValues();
+sendToAll();
