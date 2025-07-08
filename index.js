@@ -5,7 +5,7 @@ const fs = require("fs");
 
 async function sendTemplateMessage() {
   const response = await axios({
-    url: "https://graph.facebook.com/v22.0/663233670209560/messages",
+    url: `https://graph.facebook.com/v22.0/${process.env.PHONENUMBER_ID}/messages`,
     method: "post",
     headers: {
       Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
@@ -29,7 +29,7 @@ async function sendTemplateMessage() {
 
 async function sendTextMessage() {
   const response = await axios({
-    url: "https://graph.facebook.com/v22.0/663233670209560/messages",
+    url: `https://graph.facebook.com/v22.0/${process.env.PHONENUMBER_ID}/messages`,
     method: "post",
     headers: {
       Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
@@ -50,7 +50,7 @@ async function sendTextMessage() {
 
 async function sendMediaMessage() {
   const response = await axios({
-    url: "https://graph.facebook.com/v22.0/663233670209560/messages",
+    url: `https://graph.facebook.com/v22.0/${process.env.PHONENUMBER_ID}/messages`,
     method: "post",
     headers: {
       Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
@@ -80,7 +80,7 @@ async function uploadMediaMessage() {
   data.append("type", "image/png");
 
   const response = await axios({
-    url: "https://graph.facebook.com/v22.0/663233670209560/media",
+    url: `https://graph.facebook.com/v22.0/${process.env.PHONENUMBER_ID}/media`,
     method: "post",
     headers: {
       Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
@@ -94,7 +94,7 @@ async function uploadMediaMessage() {
 // Dynamic values
 async function sendTemplateMessageWithDynamicValues() {
   const response = await axios({
-    url: "https://graph.facebook.com/v22.0/663233670209560/messages",
+    url: `https://graph.facebook.com/v22.0/${process.env.PHONENUMBER_ID}/messages`,
     method: "post",
     headers: {
       Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
@@ -102,7 +102,7 @@ async function sendTemplateMessageWithDynamicValues() {
     },
     data: JSON.stringify({
       messaging_product: "whatsapp",
-      to: "919361758471",
+      to: "",
       type: "template",
       template: {
         name: "greeting",
@@ -137,4 +137,4 @@ async function sendTemplateMessageWithDynamicValues() {
 }
 
 // uploadMediaMessage();
-sendTemplateMessageWithDynamicValues();
+// sendTemplateMessageWithDynamicValues();
