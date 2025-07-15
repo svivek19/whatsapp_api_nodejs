@@ -1,54 +1,52 @@
 require("dotenv").config();
 const axios = require("axios");
 
-const WHATSAPP_TOKEN = process.env.WHATSAPP_TOKEN;
+const ACCESS_TOKEN = process.env.WHATSAPP_TOKEN;
 const PHONENUMBER_ID = process.env.PHONENUMBER_ID;
 
-const RECIPIENTS = [
-  { number: "919361758471", name: "Vivek" },
-  { number: "917603857110", name: "Nirmal" },
-  { number: "918637468236", name: "Praveen" },
-  { number: "919790112364", name: "Sakthi" },
-  { number: "916369725985", name: "Sri Ramu" },
-  { number: "917418831620", name: "Mukesh" },
-  { number: "918508023007", name: "Syed" },
-  { number: "919342836860", name: "Saravanan" },
-];
+const WHATSAPP_API_URL = `https://graph.facebook.com/v22.0/${PHONENUMBER_ID}/messages`;
 
-function buildBody(name = "there") {
-  return `Good morning, ${name},\n\nThis is a test message from Meta confirming that billing notifications, bug and error alerts, template‑validation windows, and the 24‑hour session‑expiry period are all being delivered correctly.`;
-}
-
-async function sendTextMessage(to, body) {
+const sendWhatsAppTemplate = async () => {
   try {
-    const { data } = await axios.post(
-      `https://graph.facebook.com/v22.0/${PHONENUMBER_ID}/messages`,
+    const response = await axios.post(
+      WHATSAPP_API_URL,
       {
         messaging_product: "whatsapp",
-        to,
-        type: "text",
-        text: { body },
+        to: "919361758471",
+        type: "template",
+        template: {
+          name: "testingqsis",
+          language: {
+            code: "en_US",
+          },
+          components: [
+            {
+              type: "body",
+              parameters: [
+                {
+                  type: "text",
+                  text: "Vivek",
+                },
+              ],
+            },
+          ],
+        },
       },
       {
         headers: {
-          Authorization: `Bearer ${WHATSAPP_TOKEN}`,
+          Authorization: `Bearer ${ACCESS_TOKEN}`,
           "Content-Type": "application/json",
         },
       }
     );
-    console.log(`Sent to ${to}: ${data.messages?.[0]?.id}`);
-  } catch (err) {
-    console.error(`Failed for ${to}:`, err.response?.data || err.message);
-  }
-}
 
-async function sendToAll() {
-  for (const [i, { number, name }] of RECIPIENTS.entries()) {
-    await sendTextMessage(number, buildBody(name));
-    if (i < RECIPIENTS.length - 1) {
-      await new Promise((r) => setTimeout(r, 6000));
-    }
+    console.log("Message sent:", response.data);
+  } catch (error) {
+    console.error(
+      "Error sending message:",
+      error.response?.data || error.message
+    );
   }
-}
+};
 
-sendToAll();
+sendWhatsAppTemplate();
